@@ -17,7 +17,7 @@ logging.basicConfig(
 
 TOKEN = os.getenv("BOT_TOKEN")
 
-EXCEL_FILE = "results.xlsx"
+CSV_FILE = "results.csv"
 
 try:
     df = pd.read_csv("results.csv", dtype=str)
