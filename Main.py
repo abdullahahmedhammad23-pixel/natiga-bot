@@ -1,5 +1,6 @@
 import os
 import logging
+import requests
 import pandas as pd
 from telegram import Update
 from telegram.ext import (
@@ -18,9 +19,16 @@ logging.basicConfig(
 TOKEN = os.getenv("BOT_TOKEN")
 
 CSV_FILE = "results.csv"
+DOWNLOAD_URL = "https://drive.google.com/uc?export=download&id=1JwcZmkk5lR9EVvBr6fgGg52dyV7WlEom"
+
+if not os.path.exists(CSV_FILE):
+    print("Downloading results.csv...")
+    r = requests.get(DOWNLOAD_URL)
+    with open(CSV_FILE, "wb") as f:
+        f.write(r.content)
 
 try:
-    df = pd.read_csv("results.csv", dtype=str)
+    df = pd.read_csv(CSV_FILE, dtype=str)
     df.fillna("", inplace=True)
 
     df["seating_no"] = df["seating_no"].astype(str).str.strip()
