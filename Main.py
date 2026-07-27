@@ -20,7 +20,7 @@ TOKEN = os.getenv("BOT_TOKEN")
 EXCEL_FILE = "results.xlsx"
 
 try:
-    df = pd.read_excel(EXCEL_FILE, dtype=str)
+    df = pd.read_csv("results.csv", dtype=str)
     df.fillna("", inplace=True)
 
     df["seating_no"] = df["seating_no"].astype(str).str.strip()
