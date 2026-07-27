@@ -83,3 +83,71 @@ def search_by_name(name):
     ]
 
     return result
+def format_result(row):
+    return f"""
+🎓 نتيجة الثانوية العامة
+
+👤 الاسم:
+{row['arabic_name']}
+
+🪪 رقم الجلوس:
+{row['seating_no']}
+
+📊 المجموع:
+{row['total_degree']}
+"""
+
+
+async def handle_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    text = update.message.text.strip()
+
+    if text.isdigit():
+        row = search_by_seating(text)
+
+        if row is None:
+            await update.message.reply_text(
+                "❌ لم يتم العثور على رقم الجلوس."
+            )
+            return
+
+        await update.message.reply_text(format_result(row))
+        return
+
+    result = search_by_name(text)
+
+    if len(result) == 0:
+        await update.message.reply_text(
+            "❌ لم يتم العثور على الاسم."
+        )
+        return
+
+    if len(result) > 10:
+        await update.message.reply_text(
+            "يوجد أكثر من 10 نتائج.\nاكتب الاسم بشكل أدق."
+        )
+        return
+
+    for _, row in result.iterrows():
+        await update.message.reply_text(format_result(row))
+
+
+def main():
+    app = Application.builder().token(TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(CommandHandler("help", help_command))
+
+    app.add_handler(
+        MessageHandler(
+            filters.TEXT & ~filters.COMMAND,
+            handle_message,
+        )
+    )
+
+    print("Bot Started...")
+
+    app.run_polling()
+
+
+if __name__ == "__main__":
+    main()
